@@ -96,3 +96,7 @@ class GCNmfConv(nn.Module):
         gamma = self.calc_responsibility(mean_mat, variances)
         expected_x = torch.sum(expected_x * gamma.unsqueeze(2), dim=0)
         return expected_x
+
+class FSEEmb(nn.Module):
+    def __init__(self, in_features, out_features, data, n_components, dropout, bias=True):
+        

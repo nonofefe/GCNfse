@@ -1,6 +1,6 @@
 import argparse
 
-from models import GCNmf
+from models import GCNmf, GCNfse
 from train import NodeClsTrainer
 from utils import NodeClsData, apply_mask, generate_mask
 
@@ -17,20 +17,25 @@ parser.add_argument('--type',
 parser.add_argument('--rate', default=0.1, type=float, help='missing rate')
 parser.add_argument('--nhid', default=16, type=int, help='the number of hidden units')
 parser.add_argument('--dropout', default=0.5, type=float, help='dropout rate')
-parser.add_argument('--ncomp', default=5, type=int, help='the number of Gaussian components')
+# parser.add_argument('--ncomp', default=5, type=int, help='the number of Gaussian components')
 parser.add_argument('--lr', default=0.005, type=float, help='learning rate')
 parser.add_argument('--wd', default=1e-2, type=float, help='weight decay')
 parser.add_argument('--epoch', default=10000, type=int, help='the number of training epoch')
 parser.add_argument('--patience', default=100, type=int, help='patience for early stopping')
 parser.add_argument('--verbose', action='store_true', help='verbose')
 
+parser.add_argument('--emb1', default=4, type=int, help='the size of set embedding dimension')
+parser.add_argument('--emb2', default=4, type=int, help='the size of linear combination dimension')
+
+
 args = parser.parse_args()
 
 if __name__ == '__main__':
     data = NodeClsData(args.dataset)
+    print(type(data))
     mask = generate_mask(data.features, args.rate, args.type)
     apply_mask(data.features, mask)
-    model = GCNmf(data, nhid=args.nhid, dropout=args.dropout, n_components=args.ncomp)
+    model = GCNfse(data, nhid=args.nhid, dropout=args.dropout, n_emb1=args.emb1, n_emb2=args.emb2)
     params = {
         'lr': args.lr,
         'weight_decay': args.wd,
