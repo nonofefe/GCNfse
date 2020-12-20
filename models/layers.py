@@ -98,5 +98,29 @@ class GCNmfConv(nn.Module):
         return expected_x
 
 class FSEEmb(nn.Module):
-    def __init__(self, in_features, out_features, data, n_components, dropout, bias=True):
+    def __init__(self, d, k, m, l, data, dropout, bias=True):
+        super(GCNmfConv, self).__init__()
+        self.in_features = d
+        self.k = k
+        self.m = m
+        self.l = l
+        self.dropout = dropout
+        self.weight_V = Parameter(torch.FloatTensor(k, m))
+        self.weight_W = Parameter(torch.FloatTensor(m, l))
+        self.weight_L = Parameter(torch.FloatTensor(l)
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        nn.init.xavier_uniform_(self.weight.V, gain=1.414)
+        nn.init.xavier_uniform_(self.weight.W, gain=1.414)
+        nn.init.xavier_uniform_(self.weight.L, gain=1.414)
+        if self.bias is not None:
+            self.bias.data.fill_(0)
+        
+    def forward(self, x, adj):
+        z = self.weight_V(torch.eye(k,k))
+        z = self.weught_W(z)
+        x = self.fc(x)
+
+
         

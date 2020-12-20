@@ -24,8 +24,9 @@ parser.add_argument('--epoch', default=10000, type=int, help='the number of trai
 parser.add_argument('--patience', default=100, type=int, help='patience for early stopping')
 parser.add_argument('--verbose', action='store_true', help='verbose')
 
-parser.add_argument('--emb1', default=4, type=int, help='the size of set embedding dimension')
-parser.add_argument('--emb2', default=4, type=int, help='the size of linear combination dimension')
+parser.add_argument('--emb1', default=4, type=int, help='k : the size of linear combination')
+parser.add_argument('--emb2', default=4, type=int, help='m : the size of rank refularization')
+parser.add_argument('--emb3', default=4, type=int, help='l : the size of set embedding')
 
 
 args = parser.parse_args()
@@ -35,7 +36,7 @@ if __name__ == '__main__':
     print(type(data))
     mask = generate_mask(data.features, args.rate, args.type)
     apply_mask(data.features, mask)
-    model = GCNfse(data, nhid=args.nhid, dropout=args.dropout, n_emb1=args.emb1, n_emb2=args.emb2)
+    model = GCNfse(data, nhid=args.nhid, dropout=args.dropout, n_emb1=args.emb1, n_emb2=args.emb2, n_emb3=args.emb3)
     params = {
         'lr': args.lr,
         'weight_decay': args.wd,
