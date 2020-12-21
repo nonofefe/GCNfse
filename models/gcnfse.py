@@ -1,16 +1,16 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
-from . import GCNConv, GCNmfConv#, GCN, FSE
+from . import GCNConv, GCNmfConv, FSE#, GCN, FSE
 
 
 class GCNfse(nn.Module):
     def __init__(self, data, nhid=16, dropout=0.5, n_emb1=4, n_emb2=4, n_emb3=4):
-        super(GCN, self).__init__()
+        super(GCNfse, self).__init__()
         nfeat, nclass = data.num_features, data.num_classes
-        self.fse1 = FSEEmb(nfeat, n_emb1, n_emb2, n_emb3, data, dropout)
+        self.fse1 = FSE(nfeat, n_emb1, n_emb2, n_emb3, data, dropout)
         #self.fse2 = FSEComb(n_emb1,n_emb2,dropout)
-        self.gc1 = GCNConv(n_emb2, nhid, dropout)
+        self.gc1 = GCNConv(n_emb1, nhid, dropout)
         self.gc2 = GCNConv(nhid, nclass, dropout)
 
     def reset_parameters(self):

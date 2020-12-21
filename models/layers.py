@@ -97,30 +97,55 @@ class GCNmfConv(nn.Module):
         expected_x = torch.sum(expected_x * gamma.unsqueeze(2), dim=0)
         return expected_x
 
-class FSEEmb(nn.Module):
+class FSE(nn.Module):
     def __init__(self, d, k, m, l, data, dropout, bias=True):
-        super(GCNmfConv, self).__init__()
+        super(FSE, self).__init__()
         self.in_features = d
         self.k = k
         self.m = m
         self.l = l
         self.dropout = dropout
-        self.weight_V = Parameter(torch.FloatTensor(k, m))
-        self.weight_W = Parameter(torch.FloatTensor(m, l))
-        self.weight_L = Parameter(torch.FloatTensor(l)
+        # self.weight_V = Parameter(torch.FloatTensor(m, k))
+        # self.weight_W = Parameter(torch.FloatTensor(l, m))
+        # self.weight_L = Parameter(torch.FloatTensor(d, l))
+
+        self.weight_V = nn.Linear(m, k)
+        self.weight_W = nn.Linear(l, m)
+        self.weight_L = nn.Linear(d, l)
+        self.features = data.features.numpy()
+        self.features_nan = np.isnan(self.features)
+        self.not_nan = np.count_nonzero(self.features_nan == False, axis=1)
+        self.features[self.features_nan] = 0
+
+        self.not_nan = torch.from_numpy(self.not_nan)
+        self.not_nan = np.tile(self.not_nan,(l,1))
+        self.not_nan = self.not_nan.T
+
+        self.not_nan = torch.from_numpy(self.not_nan)
+        self.features = torch.from_numpy(self.features)
+
         self.reset_parameters()
 
     def reset_parameters(self):
-        nn.init.xavier_uniform_(self.weight.V, gain=1.414)
-        nn.init.xavier_uniform_(self.weight.W, gain=1.414)
-        nn.init.xavier_uniform_(self.weight.L, gain=1.414)
-        if self.bias is not None:
-            self.bias.data.fill_(0)
+        # nn.init.xavier_uniform_(self.weight_V, gain=1.414)
+        # nn.init.xavier_uniform_(self.weight_W, gain=1.414)
+        # nn.init.xavier_uniform_(self.weight_L, gain=1.414)
+
+        nn.init.xavier_uniform_(self.weight_V.weight, gain=1.414)
+        nn.init.xavier_uniform_(self.weight_W.weight, gain=1.414)
+        nn.init.xavier_uniform_(self.weight_L.weight, gain=1.414)
+        # if self.bias is not None:
+        #     self.bias.data.fill_(0)
         
     def forward(self, x, adj):
-        z = self.weight_V(torch.eye(k,k))
-        z = self.weught_W(z)
-        x = self.fc(x)
-
-
-        
+        #z = self.weight_V(torch.eye(k,k))
+        #z = self.weught_W(z)
+        x = self.weight_L(self.features)
+        # print(x.shape)
+        # print(len(x))
+        # print(self.not_nan.shape)
+        # print(len(self.not_nan))
+        x /= self.not_nan
+        x = self.weight_W(x)
+        x = self.weight_V(x)
+        return x

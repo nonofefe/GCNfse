@@ -1,4 +1,4 @@
-from .layers import GCNmfConv
+from .layers import GCNmfConv, FSE
 from .gcn import GCN, GCNConv
 from .gcnmf import GCNmf
 from .gcnfse import GCNfse

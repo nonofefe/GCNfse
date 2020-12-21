@@ -25,8 +25,8 @@ parser.add_argument('--patience', default=100, type=int, help='patience for earl
 parser.add_argument('--verbose', action='store_true', help='verbose')
 
 parser.add_argument('--emb1', default=4, type=int, help='k : the size of linear combination')
-parser.add_argument('--emb2', default=4, type=int, help='m : the size of rank refularization')
-parser.add_argument('--emb3', default=4, type=int, help='l : the size of set embedding')
+parser.add_argument('--emb2', default=5, type=int, help='m : the size of rank refularization')
+parser.add_argument('--emb3', default=6, type=int, help='l : the size of set embedding')
 
 
 args = parser.parse_args()
