@@ -105,11 +105,7 @@ class FSE(nn.Module):
         self.m = m
         self.l = l
         self.dropout = dropout
-        # self.weight_V = Parameter(torch.FloatTensor(m, k))
-        # self.weight_W = Parameter(torch.FloatTensor(l, m))
-        # self.weight_L = Parameter(torch.FloatTensor(d, l))
-
-        self.weight_V = nn.Linear(m, k)
+        self.weight_V = nn.Linear(m, k) #
         self.weight_W = nn.Linear(l, m)
         self.weight_L = nn.Linear(d, l)
         self.features = data.features.numpy()
@@ -127,10 +123,6 @@ class FSE(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        # nn.init.xavier_uniform_(self.weight_V, gain=1.414)
-        # nn.init.xavier_uniform_(self.weight_W, gain=1.414)
-        # nn.init.xavier_uniform_(self.weight_L, gain=1.414)
-
         nn.init.xavier_uniform_(self.weight_V.weight, gain=1.414)
         nn.init.xavier_uniform_(self.weight_W.weight, gain=1.414)
         nn.init.xavier_uniform_(self.weight_L.weight, gain=1.414)
@@ -138,8 +130,6 @@ class FSE(nn.Module):
         #     self.bias.data.fill_(0)
         
     def forward(self, x, adj):
-        #z = self.weight_V(torch.eye(k,k))
-        #z = self.weught_W(z)
         x = self.weight_L(self.features)
         # print(x.shape)
         # print(len(x))
