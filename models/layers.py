@@ -105,9 +105,10 @@ class FSE(nn.Module):
         self.m = m
         self.l = l
         self.dropout = dropout
-        self.weight_V = nn.Linear(m, k) #
-        self.weight_W = nn.Linear(l, m)
-        self.weight_L = nn.Linear(d, l)
+        self.weight_V = Parameter(torch.FloatTensor(k,m))
+        self.weight_W = Parameter(torch.FloatTensor(m,l))
+        self.weight_L = Parameter(torch.FloatTensor(l,d))
+
         self.features = data.features.numpy()
         self.features_nan = np.isnan(self.features)
         self.not_nan = np.count_nonzero(self.features_nan == False, axis=1)
@@ -120,22 +121,36 @@ class FSE(nn.Module):
         self.not_nan = torch.from_numpy(self.not_nan)
         self.features = torch.from_numpy(self.features)
 
+        self.features = self.features.T # 転置
+
         self.reset_parameters()
 
     def reset_parameters(self):
-        nn.init.xavier_uniform_(self.weight_V.weight, gain=1.414)
-        nn.init.xavier_uniform_(self.weight_W.weight, gain=1.414)
-        nn.init.xavier_uniform_(self.weight_L.weight, gain=1.414)
+        # nn.init.xavier_uniform_(self.weight_V.weight, gain=1.414)
+        # nn.init.xavier_uniform_(self.weight_W.weight, gain=1.414)
+        # nn.init.xavier_uniform_(self.weight_L.weight, gain=1.414)
         # if self.bias is not None:
         #     self.bias.data.fill_(0)
+
+        nn.init.xavier_uniform_(self.weight_V.data, gain=1.414)
+        nn.init.xavier_uniform_(self.weight_W.data, gain=1.414)
+        nn.init.xavier_uniform_(self.weight_L.data, gain=1.414)
         
     def forward(self, x, adj):
-        x = self.weight_L(self.features)
-        # print(x.shape)
-        # print(len(x))
-        # print(self.not_nan.shape)
-        # print(len(self.not_nan))
-        x /= self.not_nan
-        x = self.weight_W(x)
-        x = self.weight_V(x)
+        # x = self.weight_L(self.features)
+        # x /= self.not_nan
+        # x = self.weight_W(x)
+        # x = self.weight_V(x)
+        # return x
+
+        # x = torch.matmul(self.features,self.weight_L)
+        # x /= self.not_nan
+        # x = torch.matmul(x,self.weight_W)
+        # x = torch.matmul(x,self.weight_V)
+
+        x = torch.matmul(self.weight_V,self.weight_W)
+        y = torch.matmul(self.weight_L,self.features)
+        y /= self.not_nan.T
+        x = torch.matmul(x,y)
+        x = x.T
         return x

@@ -9,7 +9,6 @@ class GCNfse(nn.Module):
         super(GCNfse, self).__init__()
         nfeat, nclass = data.num_features, data.num_classes
         self.fse1 = FSE(nfeat, n_emb1, n_emb2, n_emb3, data, dropout)
-
         self.gc1 = GCNConv(n_emb1, nhid, dropout)
         self.gc2 = GCNConv(nhid, nclass, dropout)
 

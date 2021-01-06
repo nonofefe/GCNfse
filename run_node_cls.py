@@ -33,7 +33,7 @@ args = parser.parse_args()
 
 if __name__ == '__main__':
     data = NodeClsData(args.dataset)
-    print(type(data))
+    #print(type(data))
     mask = generate_mask(data.features, args.rate, args.type)
     apply_mask(data.features, mask)
     model = GCNfse(data, nhid=args.nhid, dropout=args.dropout, n_emb1=args.emb1, n_emb2=args.emb2, n_emb3=args.emb3)
