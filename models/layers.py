@@ -113,14 +113,12 @@ class FSE(nn.Module):
         self.features_nan = np.isnan(self.features)
         self.not_nan = np.count_nonzero(self.features_nan == False, axis=1)
         self.features[self.features_nan] = 0
-
-        self.not_nan = torch.from_numpy(self.not_nan)
+        
+        self.not_nan = 1 / self.not_nan
         self.not_nan = np.tile(self.not_nan,(l,1))
-        self.not_nan = self.not_nan.T
+        self.not_nan = torch.from_numpy(self.not_nan).float()
 
-        self.not_nan = torch.from_numpy(self.not_nan)
         self.features = torch.from_numpy(self.features)
-
         self.features = self.features.T # 転置
 
         self.reset_parameters()
@@ -137,20 +135,10 @@ class FSE(nn.Module):
         nn.init.xavier_uniform_(self.weight_L.data, gain=1.414)
         
     def forward(self, x, adj):
-        # x = self.weight_L(self.features)
-        # x /= self.not_nan
-        # x = self.weight_W(x)
-        # x = self.weight_V(x)
-        # return x
-
-        # x = torch.matmul(self.features,self.weight_L)
-        # x /= self.not_nan
-        # x = torch.matmul(x,self.weight_W)
-        # x = torch.matmul(x,self.weight_V)
-
-        x = torch.matmul(self.weight_V,self.weight_W)
-        y = torch.matmul(self.weight_L,self.features)
-        y /= self.not_nan.T
-        x = torch.matmul(x,y)
-        x = x.T
-        return x
+        feat = F.dropout(self.features, p=self.dropout, training=self.training)
+        x = torch.matmul(self.weight_V, self.weight_W)
+        y = torch.matmul(self.weight_L, feat)
+        y = torch.mul(y,self.not_nan)
+        z = torch.matmul(x,y)
+        z = torch.t(z)
+        return z
