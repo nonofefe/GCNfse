@@ -138,7 +138,7 @@ class FSE(nn.Module):
         feat = F.dropout(self.features, p=self.dropout, training=self.training)
         x = torch.matmul(self.weight_V, self.weight_W)
         y = torch.matmul(self.weight_L, feat)
-        y = torch.mul(y,self.not_nan)
+        #y = torch.mul(y,self.not_nan) # ここがおかしい！
         z = torch.matmul(x,y)
         z = torch.t(z)
         return z
