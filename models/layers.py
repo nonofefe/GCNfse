@@ -114,9 +114,12 @@ class FSE(nn.Module):
         self.not_nan = np.count_nonzero(self.features_nan == False, axis=1)
         self.features[self.features_nan] = 0
         
-        self.not_nan = 1 / self.not_nan
+        self.not_nan = 1 / (self.not_nan + 0.0001)
         self.not_nan = np.tile(self.not_nan,(l,1))
         self.not_nan = torch.from_numpy(self.not_nan).float()
+
+        # print(self.not_nan)
+        # print(self.not_nan*1000)
 
         self.features = torch.from_numpy(self.features)
         self.features = self.features.T # 転置
@@ -138,7 +141,7 @@ class FSE(nn.Module):
         feat = F.dropout(self.features, p=self.dropout, training=self.training)
         x = torch.matmul(self.weight_V, self.weight_W)
         y = torch.matmul(self.weight_L, feat)
-        #y = torch.mul(y,self.not_nan) # ここがおかしい！
+        y = torch.mul(y,self.not_nan*1000) # ここがおかしい！
         z = torch.matmul(x,y)
         z = torch.t(z)
         return z
