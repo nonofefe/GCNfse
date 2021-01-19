@@ -14,11 +14,25 @@
 # print(C)
 
 
-import numpy as np
+# import numpy as np
 
-A = np.eye(3,3)
-A[:,0] = float('nan')
+# A = np.eye(3,3)
+# A[:,0] = float('nan')
+# print(A)
+# B = np.isnan(A)
+# print(B)
+# print(np.count_nonzero(B == False, axis=1))
+
+import torch
+
+A = torch.eye(2,3)
+for i in range(2):
+    for j in range(3):
+        A[i,j] = i*2+j
+
 print(A)
-B = np.isnan(A)
-print(B)
-print(np.count_nonzero(B == False, axis=1))
+rowsum = A.sum(dim=1, keepdim=True)
+print(rowsum)
+rowsum[rowsum == 0] = 1
+A = A / rowsum
+print(A)

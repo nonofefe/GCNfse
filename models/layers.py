@@ -10,6 +10,7 @@ from torch.nn.parameter import Parameter
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
+
 def ex_relu(mu, sigma):
     is_zero = (sigma == 0)
     sigma[is_zero] = 1e-10
@@ -98,12 +99,13 @@ class GCNmfConv(nn.Module):
         return expected_x
 
 class FSE(nn.Module):
-    def __init__(self, d, k, m, l, data, dropout, bias=True):
+    def __init__(self, d, k, m, la, lb, data, dropout, bias=True):
         super(FSE, self).__init__()
         self.in_features = d
         self.k = k
         self.m = m
-        self.l = l
+        self.la = la
+        self.lb = lb
         self.dropout = dropout
         self.weight_V = Parameter(torch.FloatTensor(k,m))
         self.weight_W = Parameter(torch.FloatTensor(m,l))
@@ -115,11 +117,10 @@ class FSE(nn.Module):
         self.features[self.features_nan] = 0
         
         self.not_nan = 1 / (self.not_nan + 0.0001)
+        print(self.not_nan.shape)
         self.not_nan = np.tile(self.not_nan,(l,1))
+        print(self.not_nan.shape)
         self.not_nan = torch.from_numpy(self.not_nan).float()
-
-        # print(self.not_nan)
-        # print(self.not_nan*1000)
 
         self.features = torch.from_numpy(self.features)
         self.features = self.features.T # 転置
@@ -141,7 +142,16 @@ class FSE(nn.Module):
         feat = F.dropout(self.features, p=self.dropout, training=self.training)
         x = torch.matmul(self.weight_V, self.weight_W)
         y = torch.matmul(self.weight_L, feat)
-        y = torch.mul(y,self.not_nan*1000) # ここがおかしい！
-        z = torch.matmul(x,y)
+        y = torch.mul(y, self.not_nan*1000)
+        z = torch.matmul(x, y)
         z = torch.t(z)
+        #z[z<0] = 0
+        z = F.softmax(z, dim=1)
+        #rowsum = z.sum(dim=1, keepdim=True)
+        #print(rowsum[0,0])
+
+        # rowsum = z.sum(dim=1, keepdim=True)
+        # #print(rowsum)
+        # rowsum[rowsum == 0] = 1
+        # z = z / rowsum
         return z

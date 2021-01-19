@@ -26,17 +26,16 @@ parser.add_argument('--verbose', action='store_true', help='verbose')
 
 parser.add_argument('--emb1', default=101, type=int, help='k : the size of linear combination')
 parser.add_argument('--emb2', default=102, type=int, help='m : the size of rank refularization')
-parser.add_argument('--emb3', default=103, type=int, help='l : the size of set embedding')
-
+parser.add_argument('--emb3_1', default=103, type=int, help='la : the size of set embedding')
+parser.add_argument('--emb3_2', default=103, type=int, help='lb : the size of set embedding')
 
 args = parser.parse_args()
 
 if __name__ == '__main__':
     data = NodeClsData(args.dataset)
-    #print(type(data))
     mask = generate_mask(data.features, args.rate, args.type)
     apply_mask(data.features, mask)
-    model = GCNfse(data, nhid=args.nhid, dropout=args.dropout, n_emb1=args.emb1, n_emb2=args.emb2, n_emb3=args.emb3)
+    model = GCNfse(data, nhid=args.nhid, dropout=args.dropout, n_emb1=args.emb1, n_emb2=args.emb2, n_emb3_1=args.emb3_1, n_emb3_2=args.emb3_2)
     params = {
         'lr': args.lr,
         'weight_decay': args.wd,

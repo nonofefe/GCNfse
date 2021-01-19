@@ -140,6 +140,9 @@ class NodeClsTrainer:
 
         print(mean(test_acc_list))
         print(std(test_acc_list))
+        file = open('log.txt','a')
+        file.write('{:.4f} ± {:.4f}\n'.format(mean(test_acc_list),std(test_acc_list)))
+        file.close()
         return {
             'val_acc': mean(val_acc_list),
             'test_acc': mean(test_acc_list),

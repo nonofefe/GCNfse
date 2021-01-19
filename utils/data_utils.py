@@ -243,3 +243,9 @@ def normalize_adj(edge_list):
     v = deg_inv_sqrt[row] * weight * deg_inv_sqrt[col]
     norm_adj = torch.sparse.FloatTensor(edge_list, v)
     return norm_adj
+
+def preprocess_features_pla(features):
+    rowsum = features.sum(dim=1, keepdim=True)
+    rowsum[rowsum == 0] = 1
+    features = features / rowsum
+    return features
