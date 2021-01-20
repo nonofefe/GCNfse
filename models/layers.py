@@ -101,6 +101,7 @@ class GCNmfConv(nn.Module):
 class FSE(nn.Module):
     def __init__(self, d, k, m, la, lb, data, dropout, bias=True):
         super(FSE, self).__init__()
+        l = la + lb
         self.in_features = d
         self.k = k
         self.m = m
@@ -146,7 +147,7 @@ class FSE(nn.Module):
         z = torch.matmul(x, y)
         z = torch.t(z)
         #z[z<0] = 0
-        z = F.softmax(z, dim=1)
+        #z = F.softmax(z, dim=1)
         #rowsum = z.sum(dim=1, keepdim=True)
         #print(rowsum[0,0])
 
