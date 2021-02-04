@@ -24,10 +24,10 @@ parser.add_argument('--epoch', default=10000, type=int, help='the number of trai
 parser.add_argument('--patience', default=100, type=int, help='patience for early stopping')
 parser.add_argument('--verbose', action='store_true', help='verbose')
 
-parser.add_argument('--emb1', default=101, type=int, help='k : the size of linear combination')
-parser.add_argument('--emb2', default=102, type=int, help='m : the size of rank refularization')
-parser.add_argument('--emb3_1', default=103, type=int, help='la : the size of set embedding')
-parser.add_argument('--emb3_2', default=103, type=int, help='lb : the size of set embedding')
+parser.add_argument('--emb1', default=100, type=int, help='k : the size of linear combination')
+parser.add_argument('--emb2', default=100, type=int, help='m : the size of rank refularization')
+parser.add_argument('--emb3_1', default=100, type=int, help='la : the size of set embedding')
+parser.add_argument('--emb3_2', default=100, type=int, help='lb : the size of set embedding')
 
 args = parser.parse_args()
 

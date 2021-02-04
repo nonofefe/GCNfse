@@ -18,7 +18,7 @@ class GCNfse(nn.Module):
         self.gc2.reset_parameters()
 
     def forward(self, data):
-        x, adj = data.features, data.adj
+        x, adj = data.features, data.adj # 0,1 loss(ほとんど0)
         # FSE
         x = self.fse(x,adj)
         # GCN

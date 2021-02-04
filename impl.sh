@@ -1,4 +1,9 @@
-python run_node_cls.py --rate 0.9
+a=0
+while [ $a -lt 10 ]
+do
+    python run_node_cls.py --rate 0.8
+done
+
 
 # while [ $a -lt 5 ]
 # do

@@ -102,14 +102,15 @@ class FSE(nn.Module):
     def __init__(self, d, k, m, la, lb, data, dropout, bias=True):
         super(FSE, self).__init__()
         l = la + lb
+        self.l = la+lb
         self.in_features = d
         self.k = k
         self.m = m
         self.la = la
         self.lb = lb
         self.dropout = dropout
-        self.weight_V = Parameter(torch.FloatTensor(k,m))
-        self.weight_W = Parameter(torch.FloatTensor(m,l))
+        self.weight_V = Parameter(torch.FloatTensor(k,l))
+        #self.weight_W = Parameter(torch.FloatTensor(m,l))
         self.weight_L = Parameter(torch.FloatTensor(l,d))
 
         self.features = data.features.numpy()
@@ -136,16 +137,27 @@ class FSE(nn.Module):
         #     self.bias.data.fill_(0)
 
         nn.init.xavier_uniform_(self.weight_V.data, gain=1.414)
-        nn.init.xavier_uniform_(self.weight_W.data, gain=1.414)
+        #nn.init.xavier_uniform_(self.weight_W.data, gain=1.414)
         nn.init.xavier_uniform_(self.weight_L.data, gain=1.414)
         
     def forward(self, x, adj):
-        feat = F.dropout(self.features, p=self.dropout, training=self.training)
-        x = torch.matmul(self.weight_V, self.weight_W)
+        #feat = F.dropout(self.features, p=self.dropout, training=self.training)
+        feat = self.features
+        x = self.weight_V
         y = torch.matmul(self.weight_L, feat)
-        y = torch.mul(y, self.not_nan*1000)
+        y = torch.mul(y, self.not_nan)
+        #y = F.dropout(y, p=self.dropout, training=self.training) #
         z = torch.matmul(x, y)
         z = torch.t(z)
+
+        z = torch.sigmoid(z)
+        rowsum = z.sum(dim=1, keepdim=True)
+        z = z / rowsum
+
+        # z = F.relu(z)
+        
+        # z = z / rowsum
+
         #z[z<0] = 0
         #z = F.softmax(z, dim=1)
         #rowsum = z.sum(dim=1, keepdim=True)
