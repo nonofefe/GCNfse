@@ -1,8 +1,19 @@
-a=0
-while [ $a -lt 10 ]
-do
-    python run_node_cls.py --rate 0.8
-done
+declare -a array=()
+declare -a array=("uniform" "bias" "struct")
+
+for ((i = 0; i < ${#array[@]}; i++)) {
+    echo "type = ${array[i]}" >> log.txt
+    a=0
+    while [ $a -lt 10 ]
+    do
+        b=`echo "scale=1; $a / 10 " | bc`
+        echo $b >> log.txt
+        python run_node_cls.py --dataset cora --rate $b --epoch 30 --patience 10 --type ${array[i]}
+        a=`expr $a + 1`
+    done
+    t=`expr $t + 1`
+}
+
 
 
 # while [ $a -lt 5 ]
