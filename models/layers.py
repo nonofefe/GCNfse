@@ -141,18 +141,21 @@ class FSE(nn.Module):
         nn.init.xavier_uniform_(self.weight_L.data, gain=1.414)
         
     def forward(self, x, adj):
-        #feat = F.dropout(self.features, p=self.dropout, training=self.training)
-        feat = self.features
+        feat = F.dropout(self.features, p=self.dropout, training=self.training)
+
         x = self.weight_V
         y = torch.matmul(self.weight_L, feat)
-        y = torch.mul(y, self.not_nan)
+        y = torch.mul(y, self.not_nan*1000)
         #y = F.dropout(y, p=self.dropout, training=self.training) #
         z = torch.matmul(x, y)
         z = torch.t(z)
 
-        z = torch.sigmoid(z)
-        rowsum = z.sum(dim=1, keepdim=True)
-        z = z / rowsum
+        # #に変更
+        #z = torch.sigmoid(z)
+        #rowsum = z.sum(dim=1, keepdim=True)
+        #z = z / rowsum
+
+
 
         # z = F.relu(z)
         
