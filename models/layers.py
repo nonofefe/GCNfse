@@ -127,6 +127,7 @@ class FSE(nn.Module):
         self.features = torch.from_numpy(self.features)
         self.features = self.features.T # 転置
 
+        self.not_nan.to(device)
         self.reset_parameters()
 
     def reset_parameters(self):
