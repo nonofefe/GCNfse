@@ -119,9 +119,9 @@ class FSE(nn.Module):
         self.features[self.features_nan] = 0
         
         self.not_nan = 1 / (self.not_nan + 0.0001)
-        print(self.not_nan.shape)
+        #print(self.not_nan.shape)
         self.not_nan = np.tile(self.not_nan,(l,1))
-        print(self.not_nan.shape)
+        #print(self.not_nan.shape)
         self.not_nan = torch.from_numpy(self.not_nan).float()
 
         self.features = torch.from_numpy(self.features)
