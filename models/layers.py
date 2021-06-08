@@ -149,7 +149,7 @@ class FSE(nn.Module):
 
         x = self.weight_V
         y = torch.matmul(self.weight_L, feat)
-
+        y = y.to(device)
         y = torch.mul(y, self.not_nan)
         #y = F.dropout(y, p=self.dropout, training=self.training) #
         z = torch.matmul(x, y)
