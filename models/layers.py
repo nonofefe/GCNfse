@@ -142,6 +142,7 @@ class FSE(nn.Module):
         
     def forward(self, x, adj):
         feat = F.dropout(self.features, p=self.dropout, training=self.training)
+        feat = feat.to(device)
 
         x = self.weight_V
         y = torch.matmul(self.weight_L, feat)
