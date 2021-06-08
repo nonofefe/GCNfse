@@ -127,7 +127,9 @@ class FSE(nn.Module):
         self.features = torch.from_numpy(self.features)
         self.features = self.features.T # 転置
 
+        self.not_nan *= 1000
         self.not_nan.to(device)
+
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -147,7 +149,8 @@ class FSE(nn.Module):
 
         x = self.weight_V
         y = torch.matmul(self.weight_L, feat)
-        y = torch.mul(y, self.not_nan*1000)
+
+        y = torch.mul(y, self.not_nan)
         #y = F.dropout(y, p=self.dropout, training=self.training) #
         z = torch.matmul(x, y)
         z = torch.t(z)
